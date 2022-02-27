@@ -17,6 +17,7 @@ from EndNode import EndNode
 from Graph import Graph
 from ConvertDistance import coordToDistance
 from SecondsBetween import SecondsBetween
+from datetime import datetime 
 
 COST_PER_METRE = 0.4 / 1609.344 # $/mile / metres/mile = $/metre
 METRE_PER_HOUR = 55 * 1609.344 # miles/hour * metres/mile = metres/hour
@@ -35,6 +36,7 @@ def create_nodes(loadFile, inputFile):
             destLong = loadFile[i]["destination_longitude"]
             amount = loadFile[i]["amount"]
             pickUpTime = loadFile[i]["pickup_date_time"]
+            pickUpTime = pickUpTime[0:10] + " " + pickUpTime[11:19]
             load_list.append(Node(id, originLat, originLong, destLat, destLong, amount, pickUpTime))
         for j in range(len(inputFile)):
             input_trip_id = inputFile[j]["input_trip_id"]
@@ -54,7 +56,15 @@ if __name__ == "__main__":
     # create a set in python of the start_nodes and end_nodes
     start_node_set = set([node.start_node for node in load_list])
     end_node_set = set([node.end_node for node in load_list])
-    all_nodes = list(end_node_set) + input_list + list(start_node_set)
+    all_nodes = list(end_node_set) + list(start_node_set)
+
+    valid_nodes = []
+
+    for node.start_node in start_node_set:
+        if datetime.fromisoformat(node.pickUpTime) > 
+
+
+
     g = Graph(len(start_node_set)+len(end_node_set)+len(input_list))
     for start_node in start_node_set:
         node = load_list[[node.start_node for node in load_list].index(start_node)] # current node, this has node.load_earning
