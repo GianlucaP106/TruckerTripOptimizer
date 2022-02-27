@@ -56,13 +56,7 @@ if __name__ == "__main__":
     # create a set in python of the start_nodes and end_nodes
     start_node_set = set([node.start_node for node in load_list])
     end_node_set = set([node.end_node for node in load_list])
-    all_nodes = list(end_node_set) + list(start_node_set)
-
-    valid_nodes = []
-
-    for node.start_node in start_node_set:
-        if datetime.fromisoformat(node.pickUpTime) > 
-
+    all_nodes = list(end_node_set) + input_list + list(start_node_set)
 
 
     g = Graph(len(start_node_set)+len(end_node_set)+len(input_list))
