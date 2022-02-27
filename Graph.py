@@ -2,16 +2,16 @@ from queue import PriorityQueue
 class Graph:
     def __init__(self, num_of_vertices):
         self.v = num_of_vertices
-        self.edges = [[-1 for i in range(num_of_vertices)] for j in range(num_of_vertices)]
+        self.edges = [[(-1,-1,-1) for i in range(num_of_vertices)] for j in range(num_of_vertices)]
         self.visited = []
 
-    def add_edge(self, u, v, weight):
-        self.edges[u][v] = weight
-        self.edges[v][u] = weight
+    def add_edge(self, u, v, weight, node_type, earning = None):
+        self.edges[u][v] = (weight, node_type, earning)
+        self.edges[v][u] = (weight, node_type, earning)
 
     def dijkstra(graph, start_vertex):
-        D = {v:float('inf') for v in range(graph.v)}
-        D[start_vertex] = 0
+        D = {v:(float('inf'),float('inf'),float('inf')) for v in range(graph.v)}
+        D[start_vertex] = (0,0,0)
 
         pq = PriorityQueue()
         pq.put((0, start_vertex))
@@ -21,12 +21,15 @@ class Graph:
             graph.visited.append(current_vertex)
 
             for neighbor in range(graph.v):
-                if graph.edges[current_vertex][neighbor] != -1:
+                if(graph.edges[current_vertex][neighbor][2] != 'end'):
+                    load_earning = []
+                if graph.edges[current_vertex][neighbor] != (-1, -1, -1):
                     distance = graph.edges[current_vertex][neighbor]
+                    load_earning.append(distance[1])
                     if neighbor not in graph.visited:
                         old_cost = D[neighbor]
-                        new_cost = D[current_vertex] + distance
-                        if new_cost < old_cost:
+                        new_cost = D[current_vertex][0] + distance[0]
+                        if new_cost < old_cost[0]:
                             pq.put((new_cost, neighbor))
-                            D[neighbor] = new_cost
+                            D[neighbor] = (new_cost, load_earning)
         return D
