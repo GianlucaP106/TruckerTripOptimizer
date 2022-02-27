@@ -21,14 +21,12 @@ class Graph:
             graph.visited.append(current_vertex)
 
             for neighbor in range(graph.v):
-                if(graph.edges[current_vertex][neighbor][2] != 'end'):
-                    load_earning = []
                 if graph.edges[current_vertex][neighbor] != (-1, -1, -1):
                     distance = graph.edges[current_vertex][neighbor]
-                    load_earning.append(distance[1])
                     if neighbor not in graph.visited:
                         old_cost = D[neighbor]
-                        new_cost = D[current_vertex][0] + distance[0]
+                        new_cost = D[current_vertex][0] + distance[0] 
+                        load_earning = graph.edges[current_vertex][neighbor][1] + D[current_vertex][1] 
                         if new_cost < old_cost[0]:
                             pq.put((new_cost, neighbor))
                             D[neighbor] = (new_cost, load_earning)

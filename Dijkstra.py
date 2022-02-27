@@ -18,11 +18,13 @@ from Graph import Graph
 from ConvertDistance import coordToDistance
 from SecondsBetween import SecondsBetween
 
-COST_PER_METRE = 0.4 / 1609.344 # $/mile / metres/mile
+COST_PER_METRE = 0.4 / 1609.344 # $/mile / metres/mile = $/metre
 METRE_PER_HOUR = 55 * 1609.344 # miles/hour * metres/mile = metres/hour
+COST_PER_SECOND = COST_PER_METRE * METRE_PER_HOUR / 3600 # $/metre * metres/hour * hour/seconds
 load_list = []
 input_list = []
 all_nodes = []
+profit_list = []
 
 def create_nodes(loadFile, inputFile):
         for i in range(len(loadFile)):
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     # create a set in python of the start_nodes and end_nodes
     start_node_set = set([node.start_node for node in load_list])
     end_node_set = set([node.end_node for node in load_list])
-    all_nodes = input_list + list(start_node_set) + list(end_node_set)
+    all_nodes = list(end_node_set) + input_list + list(start_node_set)
     g = Graph(len(start_node_set)+len(end_node_set)+len(input_list))
     for start_node in start_node_set:
         node = load_list[[node.start_node for node in load_list].index(start_node)] # current node, this has node.load_earning
@@ -65,8 +67,11 @@ if __name__ == "__main__":
             time_duration_end_start = coordToDistance(start_node.origin_latitude,start_node.origin_longitude, end_node.destination_latitude, end_node.destination_longitude)/METRE_PER_HOUR * 3600 # to seconds
             if (time_duration_end_start < SecondsBetween(input_node.max_destination_time,input_node.start_time)): # end to start
                 g.add_edge(all_nodes.index(end_node),all_nodes.index(start_node), time_duration_end_start, node.load_earning, 'end')
-    D = Graph.dijkstra(g, all_nodes.index(input_list[0]))
+    start_node_index = all_nodes.index(input_list[0])
+    start_node = all_nodes[start_node_index]
+    D = Graph.dijkstra(g, start_node_index)
     for vertex in range(len(D)):
         if(isinstance(all_nodes[vertex], EndNode)):
-            if(D[vertex][0] < SecondsBetween(all_nodes[0].max_destination_time,all_nodes[0].start_time)):
-                print("Time from vertex {} to vertex {} is {} and load earning of trip {} total cost is.".format(0,vertex,D[vertex][0],D[vertex][1]))
+            profit_list.append(D[vertex][1] - D[vertex][0]*COST_PER_SECOND)
+    max_profit_index = profit_list.index(max(profit_list))
+    print("Time from vertex {} and {} to {} and {} is {} and load earning of trip {} net profit is {}.".format(start_node.start_latitude, start_node.start_longitude,all_nodes[max_profit_index].destination_latitude, all_nodes[max_profit_index].destination_longitude,D[max_profit_index][0],D[max_profit_index][1], D[max_profit_index][1] - D[max_profit_index][0]*COST_PER_SECOND))
