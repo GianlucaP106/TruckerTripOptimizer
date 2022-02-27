@@ -15,6 +15,7 @@ from Node import Node
 from InputNode import InputNode
 from Graph import Graph
 from ConvertDistance import coordToDistance
+from SecondsBetween import SecondsBetween
 
 COST_PER_METRE = 0.4 / 1609.344 # $/mile / metres/mile
 METRE_PER_HOUR = 55 * 1609.344 # miles/hour * metres/mile = metres/hour
@@ -52,12 +53,14 @@ if __name__ == "__main__":
     g = Graph(len(start_node_set)+len(end_node_set)+len(input_list))
     for input_node in input_list:
         for start_node in start_node_set:
-            time_duration = (coordToDistance(start_node.origin_latitude,start_node.origin_latitude, input_node.start_latitude, input_node.start_longitude)/METRE_PER_HOUR) * 3600 # to seconds
+            time_duration_start_input = (coordToDistance(start_node.origin_latitude,start_node.origin_latitude, input_node.start_latitude, input_node.start_longitude)/METRE_PER_HOUR) * 3600 # to seconds
             # if statement here to eliminate nodes that exceed the maximum alloted time
-            if (time_duration < seconds_between(max_destination_time,start_time)):
-                g.add_edge(input_node, start_node, time_duration)
+            if (time_duration_start_input < SecondsBetween(input_node.max_destination_time,input_node.start_time)):
+                g.add_edge(input_node, start_node, time_duration_start_input)
             for end_node in end_node_set:
-                g.add_edge(start_node, end_node, coordToDistance(start_node.origin_latitude,start_node.origin_latitude, end_node.start_latitude, end_node.start_longitude)/METRE_PER_HOUR)
+                time_duration_end_start = coordToDistance(start_node.origin_latitude,start_node.origin_longitude, end_node.destination_latitude, end_node.destination_longitude)/METRE_PER_HOUR * 3600 # to seconds
+                if (time_duration_end_start < SecondsBetween(input_node.max_destination_time,input_node.start_time)):
+                    g.add_edge(start_node, end_node, time_duration_end_start)
 
     D = dijkstra(g, input_list[0])
     print(D)
